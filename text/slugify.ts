@@ -25,5 +25,5 @@ export function slugify(input: string): string {
     .replaceAll(/['"\p{Pi}\p{Pf}]/gu, "")
     // all other non-word chars (whitespace, commas, periods, symbols, etc.)
     .replaceAll(/[^\p{L}\p{M}\p{N}]+/gu, "-")
-    .replaceAll(/^-|-$/g, "");
+    .replaceAll(/^-|-$/g, "") || "-";
 }

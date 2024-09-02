@@ -1,5 +1,5 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
-import { assertEquals } from "@std/assert/equals";
+import { assertEquals, assertNotMatch } from "@std/assert";
 import { slugify } from "./slugify.ts";
 
 Deno.test("slugify() returns kebabcase", () => {
@@ -28,8 +28,10 @@ Deno.test("slugify() handles dashes", () => {
   assertEquals(slugify("--Hello--World--"), "hello-world");
 });
 
-Deno.test("slugify() handles empty string", () => {
-  assertEquals(slugify(""), "");
+Deno.test("slugify() converts empty string to a single dash", () => {
+  // Prevent any issues with zero-length slugs in URLs, e.g.
+  // `/a//b` -> `/a/b`; `/a/` -> `/a`
+  assertEquals(slugify(""), "-");
 });
 
 Deno.test("slugify() replaces non-word characters with dashes", () => {
@@ -73,4 +75,16 @@ Deno.test("slugify() strips curly/straight quotes/apostrophes", () => {
   assertEquals(slugify("What's up?"), "whats-up");
   assertEquals(slugify("甲“‘乙’”"), "甲乙");
   assertEquals(slugify(`甲"'乙'"`), "甲乙");
+});
+
+Deno.test("slugify() strips or replaces all non-alphanumeric ASCII chars except for `-`", () => {
+  // Ensure that interpolation into all parts of a URL (path segment, search
+  // params, hash, subdomain, etc.) is safe, i.e. doesn't allow path traversal
+  // or other exploits, which could be allowed by presence of chars like
+  // `./?&=#` etc.
+
+  const ALL_ASCII =
+    "\x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\v\f\r\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F";
+
+  assertNotMatch(slugify(ALL_ASCII), /[^a-z0-9\-]/);
 });
