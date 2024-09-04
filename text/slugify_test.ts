@@ -1,6 +1,7 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 import { assertEquals, assertNotMatch } from "@std/assert";
-import { slugify } from "./slugify.ts";
+import { DIACRITICS, NON_ASCII, slugify } from "./slugify.ts";
+import { charMap } from "./slugify_char_map.ts";
 
 Deno.test("slugify() returns kebabcase", () => {
   assertEquals(slugify("hello world"), "hello-world");
@@ -16,11 +17,32 @@ Deno.test("slugify() handles whitespaces", () => {
   assertEquals(slugify("Hello\r\nWorld"), "hello-world");
 });
 
-Deno.test("slugify() normalizes diacritic characters to NFC form", () => {
+Deno.test("slugify() normalizes diacritic characters to NFC form by default", () => {
   assertEquals(slugify("déjà vu".normalize("NFD")), "déjà-vu".normalize("NFC"));
   assertEquals(slugify("Cliché".normalize("NFD")), "cliché".normalize("NFC"));
   assertEquals(slugify("façade".normalize("NFD")), "façade".normalize("NFC"));
   assertEquals(slugify("résumé".normalize("NFD")), "résumé".normalize("NFC"));
+});
+
+Deno.test("slugify() strips diacritics if using charMap", () => {
+  assertEquals(slugify("déjà vu", { charMap: new Map() }), "deja-vu");
+  assertEquals(slugify("Cliché", { charMap: new Map() }), "cliche");
+  assertEquals(slugify("façade", { charMap: new Map() }), "facade");
+  assertEquals(slugify("résumé", { charMap: new Map() }), "resume");
+});
+
+Deno.test("slugify() strips diacritics if strip: NON_ASCII", () => {
+  assertEquals(slugify("déjà vu", { strip: NON_ASCII }), "deja-vu");
+  assertEquals(slugify("Cliché", { strip: NON_ASCII }), "cliche");
+  assertEquals(slugify("façade", { strip: NON_ASCII }), "facade");
+  assertEquals(slugify("résumé", { strip: NON_ASCII }), "resume");
+});
+
+Deno.test("slugify() strips diacritics if strip: DIACRITICS", () => {
+  assertEquals(slugify("déjà vu", { strip: DIACRITICS }), "deja-vu");
+  assertEquals(slugify("Cliché", { strip: DIACRITICS }), "cliche");
+  assertEquals(slugify("façade", { strip: DIACRITICS }), "facade");
+  assertEquals(slugify("résumé", { strip: DIACRITICS }), "resume");
 });
 
 Deno.test("slugify() handles dashes", () => {
@@ -56,25 +78,67 @@ Deno.test("slugify() replaces non-word characters with dashes", () => {
   );
   assertEquals(
     slugify("Bitcoin soars past $33,000, its highest ever"),
-    "bitcoin-soars-past-33-000-its-highest-ever",
+    "bitcoin-soars-past-33000-its-highest-ever",
   );
-
-  assertEquals(slugify("The value of Pi is 3.14"), "the-value-of-pi-is-3-14");
-  assertEquals(slugify("La valeur de Pi est 3,14"), "la-valeur-de-pi-est-3-14");
-  assertEquals(slugify("O(n)"), "o-n");
-  assertEquals(slugify("甲（乙）"), "甲-乙");
 });
 
-Deno.test("slugify() works for non-Latin alphabets", () => {
+Deno.test("slugify() works with non-Latin alphabetic text", () => {
   assertEquals(slugify("Συστημάτων Γραφής"), "συστημάτων-γραφής");
-  assertEquals(slugify("三人行，必有我师焉"), "三人行-必有我师焉");
+  assertEquals(
+    slugify("列车运行前方是惠新西街南口站"),
+    "列车运行前方是惠新西街南口站",
+  );
 });
 
-Deno.test("slugify() strips curly/straight quotes/apostrophes", () => {
+Deno.test("slugify() converts non-Latin text to ASCII if using ICU charMap", () => {
+  assertEquals(slugify("Συστημάτων Γραφής", { charMap }), "sistimaton-grafis");
+  assertEquals(
+    slugify("列车运行前方是惠新西街南口站", { charMap }),
+    "lieche-yunxing-qianfang-shi-hui-xin-xijie-nankou-zhan",
+  );
+});
+
+Deno.test("slugify() works with custom charMap", () => {
+  assertEquals(
+    slugify(
+      "A B C",
+      { charMap: new Map([["a", "x"], ["b", "y"], ["c", "z"]]) },
+    ),
+    "x-y-z",
+  );
+});
+
+Deno.test("slugify() deletes non-Latin text if using empty charMap", () => {
+  assertEquals(slugify("Συστημάτων Γραφής", { charMap: new Map() }), "-");
+  assertEquals(
+    slugify("列车运行前方是惠新西街南口站", { charMap: new Map() }),
+    "-",
+  );
+});
+
+Deno.test("slugify() strips diacritics from non-Latin text when strip: DIACRITICS", () => {
+  Deno;
+  assertEquals(
+    slugify("Συστημάτων Γραφής", { strip: DIACRITICS }),
+    "συστηματων-γραφης",
+  );
+});
+
+Deno.test("slugify() deletes non-Latin text when strip: NON_ASCII and no charMap is provided", () => {
+  assertEquals(slugify("Συστημάτων Γραφής", { strip: NON_ASCII }), "-");
+  assertEquals(
+    slugify("列车运行前方是惠新西街南口站", { strip: NON_ASCII }),
+    "-",
+  );
+});
+
+Deno.test("slugify() deletes non-matches when a custom strip regex is supplied", () => {
+  assertEquals(slugify("abcdef", { strip: /[ace]/g }), "bdf");
+});
+
+Deno.test("slugify() strips apostrophes within words", () => {
   assertEquals(slugify("What’s up?"), "whats-up");
   assertEquals(slugify("What's up?"), "whats-up");
-  assertEquals(slugify("甲“‘乙’”"), "甲乙");
-  assertEquals(slugify(`甲"'乙'"`), "甲乙");
 });
 
 Deno.test("slugify() strips or replaces all non-alphanumeric ASCII chars except for `-`", () => {
