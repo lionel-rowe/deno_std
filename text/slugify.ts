@@ -65,6 +65,7 @@ function convertWord(word: string, config: TransliterationConfig) {
  * ```ts
  * import { NON_WORD, slugify } from "@std/text/slugify";
  * import { assertEquals } from "@std/assert";
+ * assertEquals(slugify("déjà-vu", { strip: NON_WORD }), "déjà-vu");
  * assertEquals(slugify("Συστημάτων Γραφής", { strip: NON_WORD }), "συστημάτων-γραφής");
  * ```
  */
@@ -76,10 +77,23 @@ export const NON_WORD = /[^\p{L}\p{M}\p{N}\-]+/gu;
  * ```ts
  * import { DIACRITICS, slugify } from "@std/text/slugify";
  * import { assertEquals } from "@std/assert";
+ * assertEquals(slugify("déjà-vu", { strip: DIACRITICS }), "deja-vu");
  * assertEquals(slugify("Συστημάτων Γραφής", { strip: DIACRITICS }), "συστηματων-γραφης");
  * ```
  */
-export const DIACRITICS = /\p{M}/gu;
+export const DIACRITICS = /[^\p{L}\p{N}\-]+/gu;
+/**
+ * A regular expression for stripping ASCII diacritics (but not other diacritics) from slugs.
+ *
+ * @example Usage
+ * ```ts
+ * import { ASCII_DIACRITICS, slugify } from "@std/text/slugify";
+ * import { assertEquals } from "@std/assert";
+ * assertEquals(slugify("déjà-vu", { strip: ASCII_DIACRITICS }), "deja-vu");
+ * assertEquals(slugify("Συστημάτων Γραφής", { strip: ASCII_DIACRITICS }), "συστημάτων-γραφής");
+ * ```
+ */
+export const ASCII_DIACRITICS = /(?<=[a-zA-Z])\p{M}+|[^\p{L}\p{M}\p{N}\-]+/gu;
 /**
  * A regular expression for stripping non-ASCII characters from slugs.
  *
@@ -87,6 +101,7 @@ export const DIACRITICS = /\p{M}/gu;
  * ```ts
  * import { NON_ASCII, slugify } from "@std/text/slugify";
  * import { assertEquals } from "@std/assert";
+ * assertEquals(slugify("déjà-vu", { strip: NON_ASCII }), "deja-vu");
  * assertEquals(slugify("Συστημάτων Γραφής", { strip: NON_ASCII }), "-");
  * ```
  */

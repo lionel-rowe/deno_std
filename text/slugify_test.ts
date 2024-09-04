@@ -1,6 +1,6 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
-import { assertEquals, assertNotMatch } from "@std/assert";
-import { DIACRITICS, NON_ASCII, slugify } from "./slugify.ts";
+import { assertEquals, assertMatch } from "@std/assert";
+import { ASCII_DIACRITICS, DIACRITICS, NON_ASCII, slugify } from "./slugify.ts";
 import { charMap } from "./slugify_char_map.ts";
 
 Deno.test("slugify() returns kebabcase", () => {
@@ -38,11 +38,23 @@ Deno.test("slugify() strips diacritics if strip: NON_ASCII", () => {
   assertEquals(slugify("résumé", { strip: NON_ASCII }), "resume");
 });
 
-Deno.test("slugify() strips diacritics if strip: DIACRITICS", () => {
+Deno.test("slugify() strips all diacritics if strip: DIACRITICS", () => {
   assertEquals(slugify("déjà vu", { strip: DIACRITICS }), "deja-vu");
   assertEquals(slugify("Cliché", { strip: DIACRITICS }), "cliche");
   assertEquals(slugify("façade", { strip: DIACRITICS }), "facade");
   assertEquals(slugify("résumé", { strip: DIACRITICS }), "resume");
+  assertEquals(
+    slugify("Συστημάτων Γραφής", { strip: DIACRITICS }),
+    "συστηματων-γραφης",
+  );
+});
+
+Deno.test("slugify() strips ASCII diacritics (but not other diacritics) if strip: ASCII_DIACRITICS", () => {
+  assertEquals(slugify("déjà-vu", { strip: ASCII_DIACRITICS }), "deja-vu");
+  assertEquals(
+    slugify("Συστημάτων Γραφής", { strip: ASCII_DIACRITICS }),
+    "συστημάτων-γραφής",
+  );
 });
 
 Deno.test("slugify() handles dashes", () => {
@@ -116,14 +128,6 @@ Deno.test("slugify() deletes non-Latin text if using empty charMap", () => {
   );
 });
 
-Deno.test("slugify() strips diacritics from non-Latin text when strip: DIACRITICS", () => {
-  Deno;
-  assertEquals(
-    slugify("Συστημάτων Γραφής", { strip: DIACRITICS }),
-    "συστηματων-γραφης",
-  );
-});
-
 Deno.test("slugify() deletes non-Latin text when strip: NON_ASCII and no charMap is provided", () => {
   assertEquals(slugify("Συστημάτων Γραφής", { strip: NON_ASCII }), "-");
   assertEquals(
@@ -147,8 +151,16 @@ Deno.test("slugify() strips or replaces all non-alphanumeric ASCII chars except 
   // or other exploits, which could be allowed by presence of chars like
   // `./?&=#` etc.
 
-  const ALL_ASCII =
-    "\x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\v\f\r\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7F";
+  const ASCII_LOWER_ALPHANUM_OR_DASH_ONLY = /^[a-z0-9\-]+$/;
+  const ALL_ASCII = Array.from(
+    { length: 0x80 },
+    (_, i) => String.fromCharCode(i),
+  ).join("");
 
-  assertNotMatch(slugify(ALL_ASCII), /[^a-z0-9\-]/);
+  assertMatch(slugify(ALL_ASCII), ASCII_LOWER_ALPHANUM_OR_DASH_ONLY);
+  // even if we explicitly set the strip regex to match nothing
+  assertMatch(
+    slugify(ALL_ASCII, { strip: /[^\s\S]/gu }),
+    ASCII_LOWER_ALPHANUM_OR_DASH_ONLY,
+  );
 });

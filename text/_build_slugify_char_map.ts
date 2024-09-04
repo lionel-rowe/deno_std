@@ -1,6 +1,10 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 import { escape as regExpEscape } from "@std/regexp";
 
+// Builds up a simple char map using naive regex-based parsing of ICU source files.
+// This won't give perfect transliteration results and could probably be
+// improved upon significantly, but hopefully it's good enough for creating slugs.
+
 // needs to be cloned/downloaded from https://github.com/unicode-org/icu/blob/main/icu4c/source/data/translit/
 const dir = "./icu/icu4c/source/data/translit";
 
