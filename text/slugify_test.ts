@@ -175,6 +175,29 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
    */
   const tests = [
     {
+      locale: "am",
+      results: [
+        {
+          text: "በርበሬን ከላመ ከሞተ አግኝተሽው ዋጥ ስልቅጥ አድርገሽ ከምኔው ጨረሽው",
+          sansCharMap: "በርበሬን-ከላመ-ከሞተ-አግኝተሽው-ዋጥ-ስልቅጥ-አድርገሽ-ከምኔው-ጨረሽው",
+          withCharMap:
+            "beribereni-kelame-kemote-ginyiteshiwi-wat-silikt-dirigeshi-keminewi-chreshiwi",
+        },
+        {
+          text: "ላሊበላ ሄደሽ ከህንጻው ብትሰፍሪ አይገኝም ጽድቅ አለ ባህሪ",
+          sansCharMap: "ላሊበላ-ሄደሽ-ከህንጻው-ብትሰፍሪ-አይገኝም-ጽድቅ-አለ-ባህሪ",
+          withCharMap:
+            "lalibela-hedeshi-kehinitswi-bitisefiri-yigenyimi-tsdik-le-bahiri",
+        },
+        {
+          text: "ጆሮ ምነው አታድግ ቢሉት ጉድ እየሰማሁ በየት ልደግ አለ",
+          sansCharMap: "ጆሮ-ምነው-አታድግ-ቢሉት-ጉድ-እየሰማሁ-በየት-ልደግ-አለ",
+          withCharMap:
+            "joro-minewi-tadigi-biluti-gudi-yesemahu-beyeti-lidegi-le",
+        },
+      ],
+    },
+    {
       locale: "ar",
       /**
        * Known limitation: Missing vowels - Arabic script usually doesn't mark vowels, so the
@@ -217,11 +240,9 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
             "kabardino-balkarische-autonome-sozialistische-sowjetrepublik",
         },
         {
-          text: "Olympische Sommerspiele 2024/Teilnehmer (Vereinigte Staaten)",
-          sansCharMap:
-            "olympische-sommerspiele-2024-teilnehmer-vereinigte-staaten",
-          withCharMap:
-            "olympische-sommerspiele-2024-teilnehmer-vereinigte-staaten",
+          text: "Großsteingräber bei Haarstorf",
+          sansCharMap: "großsteingräber-bei-haarstorf",
+          withCharMap: "grosssteingraber-bei-haarstorf",
         },
       ],
     },
@@ -281,6 +302,47 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
             "la-reina-enriqueta-maría-con-sir-jeffrey-hudson-y-un-mono",
           withCharMap:
             "la-reina-enriqueta-maria-con-sir-jeffrey-hudson-y-un-mono",
+        },
+      ],
+    },
+    {
+      locale: "hi",
+      // TODO: convert Indian languages via "InterIndic"
+      results: [
+        {
+          text: "संयुक्त अरब अमीरात क्रिकेट टीम का स्कॉटलैंड दौरा 2016",
+          sansCharMap: "संयुक्त-अरब-अमीरात-क्रिकेट-टीम-का-स्कॉटलैंड-दौरा-2016",
+          withCharMap: "2016",
+        },
+        {
+          text: "विराट कोहली के अंतर्राष्ट्रीय क्रिकेट शतकों की सूची",
+          sansCharMap: "विराट-कोहली-के-अंतर्राष्ट्रीय-क्रिकेट-शतकों-की-सूची",
+          withCharMap: "-",
+        },
+        {
+          text: "घुमारवीं विधानसभा निर्वाचन क्षेत्र, हिमाचल प्रदेश",
+          sansCharMap: "घुमारवीं-विधानसभा-निर्वाचन-क्षेत्र-हिमाचल-प्रदेश",
+          withCharMap: "-",
+        },
+      ],
+    },
+    {
+      locale: "is",
+      results: [
+        {
+          text: "Alfreð Clausen syngur lög eftir Jenna Jónsson",
+          sansCharMap: "alfreð-clausen-syngur-lög-eftir-jenna-jónsson",
+          withCharMap: "alfred-clausen-syngur-log-eftir-jenna-jonsson",
+        },
+        {
+          text: "Þorkell Ólafsson (stiftprófastur)",
+          sansCharMap: "þorkell-ólafsson-stiftprófastur",
+          withCharMap: "thorkell-olafsson-stiftprofastur",
+        },
+        {
+          text: "Draumkvæði (Stjúpmóðurkvæði)",
+          sansCharMap: "draumkvæði-stjúpmóðurkvæði",
+          withCharMap: "draumkvaedi-stjupmodurkvaedi",
         },
       ],
     },
