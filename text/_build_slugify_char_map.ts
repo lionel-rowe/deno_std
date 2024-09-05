@@ -1,3 +1,4 @@
+#!/usr/bin/env -S deno run -RWE
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 import { escape as regExpEscape } from "@std/regexp";
 
@@ -5,8 +6,12 @@ import { escape as regExpEscape } from "@std/regexp";
 // This won't give perfect transliteration results and could probably be
 // improved upon significantly, but hopefully it's good enough for creating slugs.
 
-// needs to be cloned/downloaded from https://github.com/unicode-org/icu/blob/main/icu4c/source/data/translit/
-const dir = "./icu/icu4c/source/data/translit";
+const dir = Deno.env.get("ICU_DIR");
+if (!dir) {
+  throw new Error(
+    "ICU_DIR env variable must be set (needs to be cloned/downloaded from https://github.com/unicode-org/icu/blob/main/icu4c/source/data/translit/",
+  );
+}
 
 const sortAlphabetical = (a: string, b: string) => a.localeCompare(b, "en-US");
 
@@ -19,7 +24,21 @@ function normalize(str: string) {
 
 function getSubMap(txt: string) {
   const lines = txt.split("\n");
-  const m = new Map<string, string>();
+  const _m = new Map<string, string>();
+
+  function set(from: string, to: string) {
+    // If `from` contains only diacritics from Latin/unspecified scripts, we ignore the entry
+    // (to avoid e.g. acute accent having a value assigned, which messes up results for
+    // common European languages)
+    if (
+      /^[\p{M}&&[\p{scx=Latn}\p{scx=Inherited}\p{scx=Common}]]+$/v.test(from)
+    ) {
+      return;
+    }
+
+    _m.set(from, to);
+  }
+
   for (const line of lines) {
     if (!line.trim()) continue;
     if (/^\s*#/.test(line)) continue;
@@ -68,19 +87,19 @@ function getSubMap(txt: string) {
           for (let i = from!; i <= to!; i++) {
             const ch = String.fromCodePoint(i);
             if (/[\p{L}\p{M}\p{N}]/u.test(ch)) {
-              m.set(ch, x.to);
+              set(ch, x.to);
             }
           }
         } else {
-          m.set(ch, x.to);
+          set(ch, x.to);
         }
       }
     } else {
       if (/[\[\]]/.test(x.from)) continue;
-      m.set(x.from, x.to);
+      set(x.from, x.to);
     }
   }
-  return m;
+  return _m;
 }
 
 let ascii: Map<string, string>;

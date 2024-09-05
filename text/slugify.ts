@@ -51,10 +51,7 @@ type TransliterationConfig = {
 
 function convertWord(word: string, config: TransliterationConfig) {
   return config.transliterate
-    ? word.replaceAll(/\p{M}/gu, "").replaceAll(
-      config.re,
-      (m) => config.charMap.get(m) ?? m,
-    )
+    ? word.replaceAll(config.re, (m) => config.charMap.get(m) ?? m)
     : word;
 }
 

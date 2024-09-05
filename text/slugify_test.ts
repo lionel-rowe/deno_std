@@ -167,7 +167,7 @@ Deno.test("slugify() strips or replaces all non-alphanumeric ASCII chars except 
 
 Deno.test("slugify() converts Wikipedia titles in various languages", async (t) => {
   /**
-   * `text` is random Wikipedia titles from each locale:
+   * `text` is selected Wikipedia titles from each locale retrieved using:
    *
    * ```sh
    * curl "https://$LOCALE.wikipedia.org/w/api.php?action=query&format=json&list=random&formatversion=2&rnnamespace=0&rnlimit=50"
@@ -294,7 +294,7 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
         {
           text: "コンティニュイング・ケア・リタイアメント・コミュニティ",
           sansCharMap: "コンティニュイング-ケア-リタイアメント-コミュニティ",
-          withCharMap: "konte-ni-inku-kea-ritaiamento-komyunite",
+          withCharMap: "konte-ni-ingu-kea-ritaiamento-komyunite",
         },
         {
           text: "ニューヨーク映画批評家協会賞 ノンフィクション映画賞",
@@ -305,7 +305,7 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
         {
           text: "ヴィルヘルム・ルートヴィヒ (ヴュルテンベルク公)",
           sansCharMap: "ヴィルヘルム-ルートヴィヒ-ヴュルテンベルク公",
-          withCharMap: "uruherumu-ru-tohi-urutenheru-ku-gong",
+          withCharMap: "vruherumu-ru-tohi-vrutenberu-ku-gong",
         },
       ],
     },
@@ -318,7 +318,7 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "500-величайших-альбомов-всех-времён-по-версии-журнала-rolling-stone",
           withCharMap:
-            "500-velichaishix-alibomov-vsex-vremen-po-versii-jurnala-rolling-stone",
+            "500-velichayshix-alibomov-vsex-vremyon-po-versii-jurnala-rolling-stone",
         },
         {
           text:
@@ -326,7 +326,7 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "премия-правительства-российской-федерации-в-области-образования",
           withCharMap:
-            "premiya-pravitelistva-rossiiskoi-federatsii-v-oblasti-obrazovaniya",
+            "premiya-pravitelistva-rossiyskoy-federatsii-v-oblasti-obrazovaniya",
         },
         {
           text: "Статья 5 Конвенции о защите прав человека и основных свобод",
@@ -351,21 +351,21 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "จังหวัดมุกดาหารในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2562",
           withCharMap:
-            "cnghwd-mkdahar-n-kar-elxk-tng-smak-spha-ph-n-radr-iy-epnkar-wip-s-2562",
+            "canghwad-mukdahar-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2562",
         },
         {
           text: "จังหวัดภูเก็ตในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป พ.ศ. 2519",
           sansCharMap:
             "จังหวัดภูเก็ตในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2519",
           withCharMap:
-            "cnghwd-phekt-n-kar-elxk-tng-smak-spha-ph-n-radr-iy-epnkar-wip-s-2519",
+            "canghwad-phuekt-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2519",
         },
         {
           text: "จังหวัดสงขลาในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป พ.ศ. 2562",
           sansCharMap:
             "จังหวัดสงขลาในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2562",
           withCharMap:
-            "cnghwd-sngkhla-n-kar-elxk-tng-smak-spha-ph-n-radr-iy-epnkar-wip-s-2562",
+            "canghwad-sngkhla-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2562",
         },
       ],
     },
