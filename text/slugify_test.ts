@@ -181,13 +181,13 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           text: "በርበሬን ከላመ ከሞተ አግኝተሽው ዋጥ ስልቅጥ አድርገሽ ከምኔው ጨረሽው",
           sansCharMap: "በርበሬን-ከላመ-ከሞተ-አግኝተሽው-ዋጥ-ስልቅጥ-አድርገሽ-ከምኔው-ጨረሽው",
           withCharMap:
-            "beribereni-kelame-kemote-ginyiteshiwi-wat-silikt-dirigeshi-keminewi-chreshiwi",
+            "beribereni-kelame-kemote-ginyiteshiwi-wati-silikiti-dirigeshi-keminewi-chereshiwi",
         },
         {
           text: "ላሊበላ ሄደሽ ከህንጻው ብትሰፍሪ አይገኝም ጽድቅ አለ ባህሪ",
           sansCharMap: "ላሊበላ-ሄደሽ-ከህንጻው-ብትሰፍሪ-አይገኝም-ጽድቅ-አለ-ባህሪ",
           withCharMap:
-            "lalibela-hedeshi-kehinitswi-bitisefiri-yigenyimi-tsdik-le-bahiri",
+            "lalibela-hedeshi-kehinitsawi-bitisefiri-yigenyimi-tsidiki-le-bahiri",
         },
         {
           text: "ጆሮ ምነው አታድግ ቢሉት ጉድ እየሰማሁ በየት ልደግ አለ",
@@ -312,17 +312,20 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
         {
           text: "संयुक्त अरब अमीरात क्रिकेट टीम का स्कॉटलैंड दौरा 2016",
           sansCharMap: "संयुक्त-अरब-अमीरात-क्रिकेट-टीम-का-स्कॉटलैंड-दौरा-2016",
-          withCharMap: "2016",
+          withCharMap:
+            "samyaukata-araba-amairaata-karaikaeta-taima-kaa-sakaotalaaimda-daauraa-2016",
         },
         {
           text: "विराट कोहली के अंतर्राष्ट्रीय क्रिकेट शतकों की सूची",
           sansCharMap: "विराट-कोहली-के-अंतर्राष्ट्रीय-क्रिकेट-शतकों-की-सूची",
-          withCharMap: "-",
+          withCharMap:
+            "vairaata-kaohalai-kae-amtararaasataraiya-karaikaeta-satakaom-kai-saucai",
         },
         {
           text: "घुमारवीं विधानसभा निर्वाचन क्षेत्र, हिमाचल प्रदेश",
           sansCharMap: "घुमारवीं-विधानसभा-निर्वाचन-क्षेत्र-हिमाचल-प्रदेश",
-          withCharMap: "-",
+          withCharMap:
+            "ghaumaaravaim-vaidhaanasabhaa-nairavaacana-kasaetara-haimaacala-paradaesa",
         },
       ],
     },
@@ -380,7 +383,7 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "500-величайших-альбомов-всех-времён-по-версии-журнала-rolling-stone",
           withCharMap:
-            "500-velichayshix-alibomov-vsex-vremyon-po-versii-jurnala-rolling-stone",
+            "500-velichayshix-albomov-vsex-vremyon-po-versii-jurnala-rolling-stone",
         },
         {
           text:
@@ -388,14 +391,14 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "премия-правительства-российской-федерации-в-области-образования",
           withCharMap:
-            "premiya-pravitelistva-rossiyskoy-federatsii-v-oblasti-obrazovaniya",
+            "premiya-pravitelstva-rossiyskoy-federatsii-v-oblasti-obrazovaniya",
         },
         {
           text: "Статья 5 Конвенции о защите прав человека и основных свобод",
           sansCharMap:
             "статья-5-конвенции-о-защите-прав-человека-и-основных-свобод",
           withCharMap:
-            "statiya-5-konventsii-o-zashchite-prav-cheloveka-i-osnovnyx-svobod",
+            "statya-5-konventsii-o-zashchite-prav-cheloveka-i-osnovnyx-svobod",
         },
       ],
     },
@@ -413,21 +416,21 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
           sansCharMap:
             "จังหวัดมุกดาหารในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2562",
           withCharMap:
-            "canghwad-mukdahar-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2562",
+            "canghwad-mukdahar-in-kar-eluxk-tang-smachik-spha-phu-aethn-radr-ithy-epnkar-thawip-ph-s-2562",
         },
         {
           text: "จังหวัดภูเก็ตในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป พ.ศ. 2519",
           sansCharMap:
             "จังหวัดภูเก็ตในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2519",
           withCharMap:
-            "canghwad-phuekt-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2519",
+            "canghwad-phuekt-in-kar-eluxk-tang-smachik-spha-phu-aethn-radr-ithy-epnkar-thawip-ph-s-2519",
         },
         {
           text: "จังหวัดสงขลาในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป พ.ศ. 2562",
           sansCharMap:
             "จังหวัดสงขลาในการเลือกตั้งสมาชิกสภาผู้แทนราษฎรไทยเป็นการทั่วไป-พ-ศ-2562",
           withCharMap:
-            "canghwad-sngkhla-n-kar-eluxk-tang-smaik-spha-phu-n-radr-iy-epnkar-awip-s-2562",
+            "canghwad-sngkhla-in-kar-eluxk-tang-smachik-spha-phu-aethn-radr-ithy-epnkar-thawip-ph-s-2562",
         },
       ],
     },

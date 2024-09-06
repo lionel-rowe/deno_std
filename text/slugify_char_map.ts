@@ -1,6 +1,7 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 // This module is browser compatible.
-import _charMap from "./_slugify_char_map.json" with { type: "json" };
+// import _charMap from "./_slugify_char_map.json" with { type: "json" };
+import _charMap from "./_slugify_char_map/map.json" with { type: "json" };
 
 /**
  * A mapping from non-Latin characters to their Latin equivalents, used for slugifying.
