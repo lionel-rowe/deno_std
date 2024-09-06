@@ -1,7 +1,7 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 import { assertEquals, assertMatch } from "@std/assert";
 import { ASCII_DIACRITICS, DIACRITICS, NON_ASCII, slugify } from "./slugify.ts";
-import { charMap } from "./slugify_char_map.ts";
+import { charMap } from "./_slugify_char_map.ts";
 
 Deno.test("slugify() returns kebabcase", () => {
   assertEquals(slugify("hello world"), "hello-world");
@@ -200,8 +200,8 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
     {
       locale: "ar",
       /**
-       * Known limitation: Missing vowels - Arabic script usually doesn't mark vowels, so the
-       * transliteration lacks them.
+       * Known limitation: Missing vowels - Arabic script omits many vowels, so
+       * the transliteration lacks them too.
        */
       results: [
         {
@@ -307,7 +307,6 @@ Deno.test("slugify() converts Wikipedia titles in various languages", async (t) 
     },
     {
       locale: "hi",
-      // TODO: convert Indian languages via "InterIndic"
       results: [
         {
           text: "संयुक्त अरब अमीरात क्रिकेट टीम का स्कॉटलैंड दौरा 2016",

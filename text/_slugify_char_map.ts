@@ -4,7 +4,7 @@
 import _charMap from "./_slugify_char_map/map.json" with { type: "json" };
 
 /**
- * A mapping from non-Latin characters to their Latin equivalents, used for slugifying.
+ * A mapping from non-ASCII characters to their ASCII equivalents, used for slugifying.
  */
 export const charMap: Map<string, string> = new Map();
 for (const x of Object.entries(_charMap)) {

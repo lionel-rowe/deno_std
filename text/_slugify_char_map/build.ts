@@ -1,4 +1,5 @@
 #!/usr/bin/env -S deno run -RWE
+// Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 import peggy from "npm:peggy@4.0.3";
 
 const dir = Deno.env.get("ICU_DIR");
@@ -25,12 +26,13 @@ const map: Map<string, string> = new Map();
 
 // order is important - each step builds on the previous ones
 const mappingStepFileNameRegexes: RegExp[] = [
-  // /^Devanagari_InterIndic\.txt$/,
-  // /^InterIndic_Latin\.txt/,
+  // Indian languages must be converted via InterIndic, so we do that first
   /_InterIndic\.txt$/,
   /(?<!Grek)(?:_Latn|_Latin|_Latn_BGN)\.txt$/,
   /^Latin_ASCII\.txt$/,
 ]
+  // We work backwards due to how we build the map, but conceptually conversion is "forward"
+  // (e.g. Devanagari -> InterIndic -> Latin -> ASCII)
   .reverse();
 
 for (const re of mappingStepFileNameRegexes) {
@@ -100,10 +102,8 @@ await Deno.writeTextFile(
   JSON.stringify(out, null, 2) + "\n",
 );
 
-// // for testing the parser
-
-// const path = `${dir}/${"Hani_Latn.txt"}`;
-// // const source = await Deno.readTextFile(path);
+// // For testing the parser
+// const source = await Deno.readTextFile(`${dir}/${"Hani_Latn.txt"}`);
 // const source = String.raw`
 // $ejective = ’;
 // $glottal  = ’;
@@ -122,4 +122,4 @@ await Deno.writeTextFile(
 // ኽ → h\u0331i ; # ETHIOPIC SYLLABLE KXE
 // `
 // const result = parser.parse(source)
-// console.log(result.lines)
+// console.info(result.lines)
