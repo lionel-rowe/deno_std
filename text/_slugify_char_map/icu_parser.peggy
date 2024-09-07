@@ -67,7 +67,7 @@ Char
   = id:Identifier { return lookup(id) }
     / Escape
     / (([\uD800-\uDBFF] [\uDC00-\uDFFF])
-    / [^ \n\r\[\]\-→↔=;]) { return text() }
+    / [^ \n\r\[\]\-<>→↔=;]) { return text() }
 
 Hex = [0-9a-fA-F]
 
@@ -87,8 +87,14 @@ CharRange
     )
    }
 
+// icu/icu4j/main/translit/src/main/java/com/ibm/icu/text/Transliterator.java:
+// > <p>Note: Another description of the Transliterator rule syntax is available in
+// > <a href="https://www.unicode.org/reports/tr35/tr35-general.html#Transform_Rules_Syntax">section
+// > Transform Rules Syntax of UTS #35: Unicode LDML</a>.
+// > The rules are shown there using arrow symbols ← and → and ↔.
+// > ICU supports both those and the equivalent ASCII symbols &lt; and &gt; and &lt;&gt;.
 Operator
-  = [→↔=] { return text() }
+  = ([→>↔=] / "<>") { return text() }
 
 Lhs
   = CharRule
