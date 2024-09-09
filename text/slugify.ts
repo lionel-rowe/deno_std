@@ -3,58 +3,20 @@
 
 const wordSegmenter = new Intl.Segmenter("en-US", { granularity: "word" });
 
-/**
- * Options for {@linkcode slugify}.
- */
+/** Options for {@linkcode slugify}. */
 export type SlugifyOptions = {
   /**
-   * The character map to use for transliteration.
-   * @default {undefined}
-   */
-  charMap: Map<string, string> | undefined;
-  /**
    * The regular expression to use for stripping characters.
-   * @default {options.charMap ? NON_ASCII : NON_WORD}
+   * @default {typeof NON_WORD}
    */
   strip: RegExp;
+  /**
+   * The transliteration function to use for converting non-Latin text.
+   * Called on each word in the input before joining them with dashes.
+   * @default {undefined}
+   */
+  transliterate: ((word: string) => string) | undefined;
 };
-
-// cache so regex doesn't need to be recreated from scratch every time
-const transliterationReCache = new WeakMap<Map<string, string>, RegExp>();
-function getTransliterationRe(charMap: Map<string, string>) {
-  if (transliterationReCache.has(charMap)) {
-    return transliterationReCache.get(charMap)!;
-  }
-
-  if (!charMap.size) {
-    // match nothing
-    return /[^\s\S]/gu;
-  }
-
-  // sort length descending to ensure longer substrings are matched first
-  const source = `(?:${
-    [...charMap.keys()].sort((a, b) => b.length - a.length).join("|")
-  })`;
-
-  const re = new RegExp(source, "gu");
-
-  transliterationReCache.set(charMap, re);
-  return re;
-}
-
-type TransliterationConfig = {
-  transliterate: true;
-  charMap: Map<string, string>;
-  re: RegExp;
-} | {
-  transliterate: false;
-};
-
-function convertWord(word: string, config: TransliterationConfig) {
-  return config.transliterate
-    ? word.replaceAll(config.re, (m) => config.charMap.get(m) ?? m)
-    : word;
-}
 
 /**
  * A regular expression for stripping non-word characters from slugs.
@@ -123,34 +85,21 @@ export const NON_ASCII = /[^0-9a-zA-Z\-]/g;
  * assertEquals(slugify("Συστημάτων Γραφής"), "συστημάτων-γραφής");
  * ```
  *
- * @example With transliteration using `charMap` option
- * ```ts
- * import { slugify } from "@std/text/slugify";
- * import { charMap } from "@std/text/slugify-char-map";
- * import { assertEquals } from "@std/assert";
+ * @example With transliteration using a third-party library
+ * ```ts no-eval
+ * import { NON_ASCII, slugify } from "@std/text/slugify";
+ * import { transliterate } from "third-party-lib";
  *
- * assertEquals(slugify("Συστημάτων Γραφής", { charMap }), "sistimaton-grafis");
+ * slugify("Συστημάτων Γραφής", { transliterate, strip: NON_ASCII });
+ * // => "sistimaton-grafis"
  * ```
  */
 export function slugify(
   input: string,
   options?: Partial<SlugifyOptions>,
 ): string {
-  const config: TransliterationConfig = options?.charMap
-    ? {
-      transliterate: true,
-      charMap: options.charMap,
-      re: getTransliterationRe(options.charMap),
-    }
-    : {
-      transliterate: false,
-    };
-
   // clone with `new RegExp` in case `lastIndex` isn't zeroed
-  const stripRe = new RegExp(
-    options?.strip ?? (config.transliterate ? NON_ASCII : NON_WORD),
-  );
-
+  const stripRe = new RegExp(options?.strip ?? NON_WORD);
   const words: string[] = [];
 
   for (
@@ -166,8 +115,8 @@ export function slugify(
   }
 
   return words
-    .map((word) => convertWord(word, config))
-    .join(config.transliterate ? "-" : "")
+    .map(options?.transliterate ?? ((x) => x))
+    .join(options?.transliterate ? "-" : "")
     .replaceAll(stripRe, "")
     .normalize("NFC")
     .replaceAll(/-{2,}/g, "-")
