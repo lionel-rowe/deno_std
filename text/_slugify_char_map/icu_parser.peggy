@@ -71,9 +71,12 @@ Char
 
 Hex = [0-9a-fA-F]
 
-Escape = Uescape / Xescape
+Escape = Uescape / Xescape / MalformedUescape
 Xescape = "\\x" h:(Hex Hex) { return hexToChar(h) }
 Uescape = "\\u" h:(Hex Hex Hex Hex) { return hexToChar(h) }
+// only occurs on one line in one file in the icu repo 🤷
+// https://github.com/unicode-org/icu/blob/f062f52c123f436eb1142115ba2e4e7b65a4ac8f/icu4c/source/data/translit/my_my_Latn.txt#L130
+MalformedUescape = "\\" h:(Hex Hex Hex Hex) { return hexToChar(h) }
 
 CharClass
   = "[" ch:(CharRange / Char)* "]" { return ch.flat() }

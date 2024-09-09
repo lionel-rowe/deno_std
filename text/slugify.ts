@@ -31,11 +31,12 @@ function getTransliterationRe(charMap: Map<string, string>) {
     return /[^\s\S]/gu;
   }
 
-  const re = new RegExp(
-    // sort length descending to ensure longer substrings are matched first
-    `(?:${[...charMap.keys()].sort((a, b) => b.length - a.length).join("|")})`,
-    "gu",
-  );
+  // sort length descending to ensure longer substrings are matched first
+  const source = `(?:${
+    [...charMap.keys()].sort((a, b) => b.length - a.length).join("|")
+  })`;
+
+  const re = new RegExp(source, "gu");
 
   transliterationReCache.set(charMap, re);
   return re;
